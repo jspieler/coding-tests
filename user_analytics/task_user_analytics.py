@@ -40,6 +40,17 @@ statistics_output = [
     html.P(f"Teams in current year: {teams_current_year}", style={'font-family': 'Arial'}),
 ]
 
+# Histogram of user logins over the past year
+# Filter data for the past year
+past_year = df[df["timestamp"] > pd.Timestamp.now() - pd.DateOffset(years=1)]
+
+# Group data by date and count number of logins
+logins_by_date = past_year.groupby(past_year["timestamp"].dt.strftime('%Y-%m'))["user"].count().reset_index()
+
+fig1 = px.histogram(logins_by_date, x="timestamp", y="user", labels={"timestamp": "Month", "user": "logins"},
+                   title="Total number of logins by month over the past year", nbins=50)
+
+
 
 
 if __name__ == "__main__":
