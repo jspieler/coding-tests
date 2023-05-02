@@ -51,16 +51,39 @@ fig1 = px.histogram(logins_by_date, x="timestamp", y="user", labels={"timestamp"
                    title="Total number of logins by month over the past year", nbins=50)
 
 
+# Create the Dash app
+app = Dash(__name__)
 
 
-if __name__ == "__main__":
-    # Run this app and visit http://127.0.0.1:8050/ in your web browser.
-    app = Dash(__name__)
+# Define the app layout
+app.layout = html.Div(
+    children=[
+        html.H1(children="User Analytics Dashboard", style={'textAlign': 'center', 'font-family': 'Arial', 'font-size': 40}),
+        html.Div(children="Select a time range for the first plot.", style={'font-family': 'Arial'}),
+        
+        
+        # Time range slider
+        html.Div([
+                dcc.RangeSlider(
+                    id='time-range-slider',
+                    marks={i: (current_date - pd.DateOffset(days=i)).strftime('%b %d') for i in range(0, 31)},
+                    step=1,
+                    min=0,
+                    max=30,
+                    value=[0, 30]
+                ),
+            ],
+            style={'padding':20, 'font': 'Arial', 'font-size': 20}
+        ),
+        
+        # Bar chart for user visits by team
+        dcc.Graph(id='user-visits-bar-chart'),
 
-    app.layout = html.Div(
-        children=[
-            html.H1(children="User Analytics Dashboard"),
-            html.Div(children="Insert your visualizations and the statistics here."),
-        ]
-    )
-    app.run_server(debug=True)
+        # Histogram of user logins over the past year
+        dcc.Graph(figure=fig1),
+
+        # Statistics
+        html.H2(children="Statistics", style={'margin-top':50, 'font-family': 'Arial', 'font-size': 25}),
+        html.Div(children = statistics_output, style={'margin-left': 20}),
+    ],
+)
