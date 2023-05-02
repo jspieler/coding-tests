@@ -105,3 +105,6 @@ def update_bar_chart(time_range):
                  title='User Visits by Team')
     return fig
 
+if __name__ == "__main__":
+    # Run the app and visit http://127.0.0.1:8050/ in your web browser.
+    app.run_server(debug=True)
