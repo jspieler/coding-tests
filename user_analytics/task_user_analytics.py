@@ -87,3 +87,21 @@ app.layout = html.Div(
         html.Div(children = statistics_output, style={'margin-left': 20}),
     ],
 )
+
+# Callback to update bar chart based on time range slider
+@callback(Output('user-visits-bar-chart', 'figure'), 
+          Input('time-range-slider', 'value'))
+
+def update_bar_chart(time_range):
+    start_date = current_date - pd.DateOffset(days=time_range[1]) # start date further in the past than end date
+    end_date = current_date - pd.DateOffset(days=time_range[0])
+    end_date = end_date.combine(end_date, dt.time(23, 59, 59))
+
+    filtered_df = df[(df['timestamp'] >= pd.Timestamp(start_date)) & (df['timestamp'] <= pd.Timestamp(end_date))]
+
+    user_visits_by_team = filtered_df.groupby('team')['user'].nunique().reset_index()
+
+    fig = px.bar(user_visits_by_team, x='team', y='user', labels={'team': 'Team', 'user': 'Unique users'},
+                 title='User Visits by Team')
+    return fig
+
